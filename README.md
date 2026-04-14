@@ -32,7 +32,7 @@ MCP-with-Goose-Agent/
 
 ## Architecture Diagram
 
-![Architecture Diagram](assets/architecture.png)
+![Architecture Diagram](./assets/architecture.png)
 
 ## File Description
 

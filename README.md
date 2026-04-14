@@ -30,33 +30,9 @@ MCP-with-Goose-Agent/
 ├── __pycache__/
 └── .git_old/
 
-
 ## Architecture Diagram
 
-```mermaid
-flowchart TD
-    U[User] --> S[Streamlit UI<br/>streamlit_app.py]
-    U --> G[Goose Agent Runner<br/>main_goose.py]
-
-    S --> M[Application Entry / Orchestration<br/>main.py]
-    G --> M
-
-    M --> T[Assistant Thread Manager<br/>assistant_thread.py]
-    M --> SV[MCP Server<br/>mcp_server.py]
-    M --> SC[Schema Layer<br/>schemas.py]
-
-    SV --> AS[Auto Schema Utilities<br/>auto_schemas.py]
-    SV --> SG[Schema Generator<br/>schema_generator.py]
-
-    SV --> DB[(SQLite Database<br/>resort_bookings.db)]
-
-    E[Environment Config<br/>.env] --> M
-    E --> SV
-
-    R[Dependencies<br/>requirements.txt] --> M
-    D[Docker Runtime<br/>Dockerfile] --> M
-
-    TS[Test Script<br/>test.py] --> M
+![Architecture Diagram](assets/architecture.png)
 
 ## File Description
 

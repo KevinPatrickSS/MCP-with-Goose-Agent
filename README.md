@@ -27,8 +27,6 @@ MCP-with-Goose-Agent/
 ├── schemas.py
 ├── streamlit_app.py
 ├── test.py
-├── __pycache__/
-└── .git_old/
 ```
 
 ## Architecture Diagram

@@ -1,287 +1,266 @@
-# 🏖️ Resort Booking System with OpenAI Function Calling
+# MCP with Goose Agent
 
-A comprehensive example of using OpenAI's function calling feature with a resort booking system, featuring SQLAlchemy database integration and automatic schema generation.
+A Python-based project that combines an MCP server, Goose agent integration, a Streamlit interface, schema generation utilities, and a local SQLite database for experimentation and tool-driven workflows.
 
-## 🏗️ Project Structure
+## Overview
+
+This project is built around the idea of exposing tools and resources through the Model Context Protocol (MCP) and using Goose as the agent layer to interact with them. It also includes helper scripts for schema generation, local conversation threading, and a Streamlit app for simple UI-based interaction.
+
+The repository is designed for local development and prototyping, with configuration stored in `.env` and data persisted in a local `.db` file.
+
+## Project Structure
+
+```text
+MCP-with-Goose-Agent/
+├── .env
+├── .gitignore
+├── Dockerfile
+├── README.md
+├── requirements.txt
+├── assistant_thread.py
+├── auto_schemas.py
+├── main.py
+├── main_goose.py
+├── mcp_server.py
+├── resort_bookings.db
+├── schema_generator.py
+├── schemas.py
+├── streamlit_app.py
+├── test.py
+├── __pycache__/
+└── .git_old/
 
 ```
-MCP/
-├── venv/                    # Virtual environment
-├── requirements.txt         # Python dependencies
-├── schemas.py              # OpenAI function schemas (manual)
-├── tools.py                # Tool functions with SQLAlchemy
-├── main.py                 # Main application with OpenAI integration
-├── schema_generator.py     # Automatic schema generation utility
-├── resort_bookings.db      # SQLite database (auto-created)
-└── README.md               # This file
-```
+flowchart TD
+    U[User] --> S[Streamlit UI<br/>streamlit_app.py]
+    U --> G[Goose Agent Runner<br/>main_goose.py]
 
-## 🚀 Features
+    S --> M[Application Entry / Orchestration<br/>main.py]
+    G --> M
 
-### 1. **OpenAI Function Tool Schemas**
-- ✅ Manual schema creation in OpenAI format
-- ✅ Automatic schema generation from function signatures
-- ✅ Type-safe parameter definitions
-- ✅ Proper JSON schema format
+    M --> T[Assistant Thread Manager<br/>assistant_thread.py]
+    M --> SV[MCP Server<br/>mcp_server.py]
+    M --> SC[Schema Layer<br/>schemas.py]
 
-### 2. **Database Integration**
-- ✅ SQLAlchemy ORM with SQLite
-- ✅ Proper database models (Users, Resorts, Bookings)
-- ✅ Automatic database initialization with sample data
-- ✅ Relationship handling and joins
+    SV --> AS[Auto Schema Utilities<br/>auto_schemas.py]
+    SV --> SG[Schema Generator<br/>schema_generator.py]
 
-### 3. **Function Tools**
-- ✅ `get_user_bookings(user_name)` - Fetch user bookings
-- ✅ `get_available_resorts()` - List all resorts
-- ✅ `get_resort_details(resort_name)` - Get resort details
+    SV --> DB[(SQLite Database<br/>resort_bookings.db)]
 
-### 4. **OpenAI Integration**
-- ✅ Complete chat interface with function calling
-- ✅ Proper function call routing
-- ✅ Error handling and validation
-- ✅ Multi-turn conversations
+    E[Environment Config<br/>.env] --> M
+    E --> SV
 
-## 📋 Requirements
+    R[Dependencies<br/>requirements.txt] --> M
+    D[Docker Runtime<br/>Dockerfile] --> M
 
-- Python 3.7+
-- OpenAI API key (optional for demo mode)
-- Virtual environment (recommended)
+    TS[Test Script<br/>test.py] --> M
 
-## 🛠️ Installation
+## File Description
 
-1. **Clone and setup:**
+### Core application files
+
+- `mcp_server.py`  
+  Main MCP server implementation. This is the core backend that exposes tools and resources for agent interaction.
+
+- `main_goose.py`  
+  Entry point for running the project with Goose as the agent.
+
+- `main.py`  
+  General application entry point for local execution or testing flows.
+
+- `streamlit_app.py`  
+  Streamlit-based user interface for interacting with the project through a browser.
+
+### Schema and utility files
+
+- `schemas.py`  
+  Contains schema definitions used across the project.
+
+- `auto_schemas.py`  
+  Handles automatically generated schemas or schema-related helpers.
+
+- `schema_generator.py`  
+  Utility for generating schemas programmatically.
+
+- `assistant_thread.py`  
+  Manages assistant conversation thread logic or interaction flow storage.
+
+### Data and configuration
+
+- `.env`  
+  Stores environment variables and local secrets. This file should not be committed.
+
+- `resort_bookings.db`  
+  Local SQLite database used by the application.
+
+- `requirements.txt`  
+  Python dependencies required to run the project.
+
+- `Dockerfile`  
+  Container setup for running the project in Docker.
+
+### Development and temporary folders
+
+- `__pycache__/`  
+  Python cache directory generated automatically.
+
+- `.git_old/`  
+  Backup of the old Git metadata after reinitializing the repository. This should not be pushed.
+
+- `test.py`  
+  Test or experimental script for validating project behavior.
+
+## Features
+
+- MCP-based tool and resource exposure
+- Goose agent integration
+- Streamlit UI for local interaction
+- Local SQLite database support
+- Schema generation and management utilities
+- Docker support for containerized execution
+
+## Requirements
+
+- Python 3.10 or above
+- pip
+- Virtual environment recommended
+
+## Installation
+
+### 1. Clone the repository
+
 ```bash
-cd MCP
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+git clone https://github.com/KevinPatrickSS/MCP-with-Goose-Agent.git
+cd MCP-with-Goose-Agent
+```
+
+### 2. Create and activate a virtual environment
+
+On Windows:
+
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
+
+On macOS/Linux:
+
+```bash
+python -m venv venv
+source venv/bin/activate
+```
+
+### 3. Install dependencies
+
+```bash
 pip install -r requirements.txt
 ```
 
-2. **Set OpenAI API key (optional):**
-```bash
-export OPENAI_API_KEY="your-api-key-here"
+## Environment Variables
+
+Create a `.env` file in the project root and store all required configuration values there.
+
+Example:
+
+```env
+OPENAI_API_KEY=your_api_key_here
+DATABASE_PATH=resort_bookings.db
 ```
 
-## 🎯 Usage
+Add any other keys required by your MCP server, Goose agent, or UI.
 
-### Basic Usage
+## Running the Project
+
+### Run the MCP server
 
 ```bash
-# Activate virtual environment
-source venv/bin/activate
+python mcp_server.py
+```
 
-# Run the main application
+### Run the Goose agent flow
+
+```bash
+python main_goose.py
+```
+
+### Run the main app
+
+```bash
 python main.py
 ```
 
-### Demo Mode (without OpenAI API)
-
-If you don't have an OpenAI API key, the system will run in demo mode:
+### Run the Streamlit app
 
 ```bash
-python main.py
-```
-
-This will show:
-- Available function schemas
-- Direct tool testing
-- Database functionality
-
-### Test Individual Components
-
-```bash
-# Test database and tools directly
-python tools.py
-
-# Generate schemas automatically
-python schema_generator.py
-
-# Test specific functions
-python -c "from tools import get_user_bookings; print(get_user_bookings('John Doe'))"
-```
-
-## 🔧 Function Schemas
-
-### Manual Schema (schemas.py)
-```python
-from schemas import ALL_FUNCTION_SCHEMAS
-
-# Use in OpenAI API call
-response = client.chat.completions.create(
-    model="gpt-4-turbo-preview",
-    messages=[{"role": "user", "content": "What bookings does John Doe have?"}],
-    tools=ALL_FUNCTION_SCHEMAS,
-    tool_choice="auto"
-)
-```
-
-### Automatic Schema Generation
-```python
-from schema_generator import generate_function_schema
-
-# Auto-generate schema from function signature
-schema = generate_function_schema(get_user_bookings, "Fetch all bookings for a user by name")
-```
-
-## 📊 Database Schema
-
-### Tables
-- **users**: id, name, email
-- **resorts**: id, name, location, price_per_night, description
-- **bookings**: id, user_id, resort_id, checkin, checkout, created_at
-
-### Sample Data
-- 3 users (John Doe, Jane Smith, Alice Johnson)
-- 3 resorts (Paradise Bay, Mountain View Lodge, Tropical Sunset)
-- 3 bookings with different combinations
-
-## 🎮 Example Queries
-
-Try these queries in the chat interface:
-1. **"What bookings does John Doe have?"**
-   - Calls `get_user_bookings("John Doe")`
-   - Returns list of bookings with resort, checkin, checkout
-
-2. **"List all available resorts"**
-   - Calls `get_available_resorts()`
-   - Returns all resorts with details
-
-3. **"Tell me about Paradise Bay Resort"**
-   - Calls `get_resort_details("Paradise Bay Resort")`
-   - Returns detailed resort information
-
-4. **"What are the cheapest resorts?"**
-   - Calls `get_available_resorts()`
-   - AI processes and compares prices
-
-## 🔍 Function Details
-### get_user_bookings(user_name: str) → List[Dict[str, str]]
-```python
-# Example usage
-bookings = get_user_bookings("John Doe")
-# Returns: [{"resort": "Paradise Bay Resort", "checkin": "2024-03-15", "checkout": "2024-03-20"}]
-```
-
-### get_available_resorts() → List[Dict[str, Any]]
-```python
-# Example usage
-resorts = get_available_resorts()
-# Returns: [{"name": "Paradise Bay Resort", "location": "Maldives", "price_per_night": "$450.00", ...}]
-```
-
-### get_resort_details(resort_name: str) → Dict[str, Any]
-```python
-# Example usage
-details = get_resort_details("Paradise Bay Resort")
-# Returns: {"name": "Paradise Bay Resort", "location": "Maldives", "total_bookings": 1, ...}
-```
-
-## 🧪 Testing
-
-### Test Database Functions
-```bash
-python -c "
-from tools import *
-print('Users:', get_user_bookings('John Doe'))
-print('Resorts:', get_available_resorts())
-print('Details:', get_resort_details('Paradise Bay Resort'))
-"
-```
-
-### Test Schema Generation
-```bash
-python schema_generator.py
-```
-
-### Test OpenAI Integration
-```bash
-# Make sure OPENAI_API_KEY is set
-python main.py
-```
-
-## 📈 Advanced Features
-
-### Automatic Schema Generation
-The `schema_generator.py` utility can automatically create OpenAI function schemas from Python function signatures:
-
-```python
-from schema_generator import generate_function_schema
-
-def my_function(name: str, age: int) -> Dict[str, Any]:
-    """Get user information."""
-    return {"name": name, "age": age}
-
-schema = generate_function_schema(my_function)
-# Automatically generates proper OpenAI function schema
-```
-
-### Custom Function Descriptions
-```python
-descriptions = {
-    "get_user_bookings": "Fetch all bookings for a user by name",
-    "get_available_resorts": "List all available resorts with their basic information",
-    "get_resort_details": "Get detailed information about a specific resort"
-}
-
-schemas = generate_schemas_from_module(tools, descriptions)
-```
-
-## 🛡️ Error Handling
-
-The system includes comprehensive error handling:
-
-- **Database errors**: Proper session management and cleanup
-- **OpenAI API errors**: Graceful degradation to demo mode
-- **Function call errors**: Detailed error messages
-- **Type validation**: Automatic parameter validation
-
-## 📚 Key Concepts Demonstrated
-
-1. **OpenAI Function Calling**: Complete implementation with proper schemas
-2. **SQLAlchemy ORM**: Database models, relationships, and queries
-3. **Type Safety**: Full type annotations and validation
-4. **Automatic Schema Generation**: Reflection-based schema creation
-5. **Error Handling**: Comprehensive error management
-6. **Modular Design**: Clean separation of concerns
-
-## 🤝 Contributing
-
-Feel free to extend this example with:
-- Additional booking functions
-- More complex database queries
-- Enhanced error handling
-- Additional resort features
-- Payment processing integration
-
-## 📝 License
-
-This project is for educational purposes and demonstrates OpenAI function calling integration patterns. 
-
-## To run streamlit
-- pip install streamlit
-
 streamlit run streamlit_app.py
+```
 
-## Building the MCP server image:
-- docker build -t mcp-server:latest
+## Docker
 
-## Running the MCP server image:
-- docker run --rm mcp-server:latest
+To build the Docker image:
 
-## Creating a shared network
-- docker network create goose-mcp-network
+```bash
+docker build -t mcp-goose-agent .
+```
 
-## Run MCP server on the network
-   - docker run -d \
-   --name mcp-server \
-   --network goose-mcp-network \
-   <your-mcp-server-image>
+To run the container:
 
-## Run Goose agent on the network
-   docker run -d \
-   --name goose-agent \
-   --network goose-mcp-network \
-   <your-goose-agent-image>
+```bash
+docker run --env-file .env -p 8501:8501 mcp-goose-agent
+```
 
-## Verify connection
-- docker exec goose-agent ping mcp-server
+Adjust the command if your Dockerfile starts a different service by default.
+
+## Database
+
+This project includes a local SQLite database:
+
+```text
+resort_bookings.db
+```
+
+If your application depends on this database, keep it locally and exclude it from Git using `.gitignore`.
+
+Recommended `.gitignore` entries:
+
+```gitignore
+.env
+*.db
+.git_old/
+__pycache__/
+*.pyc
+venv/
+```
+
+## Suggested Git Setup
+
+Since this project contains local-only files, make sure these are ignored before pushing:
+
+```gitignore
+.env
+*.db
+.git_old/
+__pycache__/
+*.pyc
+venv/
+```
+
+If needed, remove already tracked local files with:
+
+```bash
+git rm --cached .env
+git rm --cached *.db
+```
+
+## Typical Workflow
+
+1. Start the MCP server.
+2. Launch the Goose-based agent flow.
+3. Interact through the Streamlit UI or direct Python entry points.
+4. Use the schema utilities to define or update tool schemas.
+5. Store and test local data through the SQLite database.
+
+
+## License
+
+This project is for development and experimentation purposes. Add a license file if you want to make the repository open for reuse.

@@ -1,5 +1,6 @@
 .env
 *.db
+.git_old/
 __pycache__/
 *.pyc
 venv/
